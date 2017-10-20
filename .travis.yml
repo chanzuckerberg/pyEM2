@@ -1,0 +1,17 @@
+language: python
+
+python:
+    - 3.5
+
+dist: trusty
+
+before_install:
+    - sudo apt-get -qq update
+    - sudo apt-get install -y libboost-all-dev libhdf5-dev
+
+install:
+    - pip install -r REQUIREMENTS.txt
+    - pip install -e .
+
+script:
+    - python -c "import pyEM2; em = pyEM2.ExpressionMatrix('abc123', gene_capacity=100, cell_capacity=100)"
