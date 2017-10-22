@@ -14,4 +14,4 @@ install:
     - pip install -e .
 
 script:
-    - python -c "import pyEM2; em = pyEM2.ExpressionMatrix('abc123', gene_capacity=100, cell_capacity=100)"
+    - pytest -v tests/
