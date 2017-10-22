@@ -58,7 +58,19 @@ PYBIND11_MODULE(pyEM2, m) {
             };
         }, py::arg("gene_name_list"))
 
+        // Binding to EM.addCell(metadata, counts). Args are two dicts, so on the
+        // python side you don't have to worry about pairs.
+        .def("add_cell",
+            [](czi_em2::ExpressionMatrix& e,
+               const std::map<std::string, std::string>& metadata,
+               const std::map<std::string, float>& counts) {
 
+                std::vector<std::pair<std::string, std::string> > cxx_metadata;
+                std::vector<std::pair<std::string, float> > cxx_counts;
+                cxx_metadata.assign(metadata.begin(), metadata.end());
+                cxx_counts.assign(counts.begin(), counts.end());
+                e.addCell(cxx_metadata, cxx_counts);
 
+        }, py::arg("metadata"), py::arg("counts"))
     ;
 }
