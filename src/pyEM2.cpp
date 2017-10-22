@@ -30,6 +30,10 @@ PYBIND11_MODULE(pyEM2, m) {
     // There are two ways to construct an ExpressionMatrix in the C++ code,
     // 1. With a directory_name that doesn't exist and a creation parameters object
     // 2. With an existing directory_name that was created with constructor 1
+    //
+    // We're going to use method 1 in the __init__ of the python ExpressionMatrix
+    // class, and we'll expose method 2 via a static method called
+    // "from_existing_directory".
     py::class_<czi_em2::ExpressionMatrix>(m, "ExpressionMatrix")
         .def(py::init(&intialize_expression_matrix),
                 py::arg("directory_name"),
@@ -38,7 +42,13 @@ PYBIND11_MODULE(pyEM2, m) {
                 py::arg("cell_metadata_name_capacity")=1<<16,
                 py::arg("cell_metadata_value_capacity")=1<<28)
 
-        .def(py::init<std::string>(),
-                py::arg("directory_name"))
+        .def_static("from_existing_directory",
+            [](std::string directory_name) {
+                return std::unique_ptr<czi_em2::ExpressionMatrix>(
+                    new czi_em2::ExpressionMatrix(directory_name));
+            },
+            py::arg("existing_em2_directory")
+        )
+
     ;
 }
