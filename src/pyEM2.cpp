@@ -58,6 +58,16 @@ PYBIND11_MODULE(pyEM2, m) {
             };
         }, py::arg("gene_name_list"))
 
+        .def_property_readonly("genes", [](czi_em2::ExpressionMatrix& e) {
+            std::vector<czi_em2::GeneId> gene_ids(e.geneSets["AllGenes"].begin(),
+                                                  e.geneSets["AllGenes"].end());
+            std::vector<std::string> gene_names;
+            for (auto gene_id : gene_ids) {
+                gene_names.push_back(e.geneName(gene_id));
+            }
+            return gene_names;
+        })
+
         // Binding to EM.addCell(metadata, counts). Args are two dicts, so on the
         // python side you don't have to worry about pairs.
         .def("add_cell",
