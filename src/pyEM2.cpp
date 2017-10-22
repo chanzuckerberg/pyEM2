@@ -1,4 +1,5 @@
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "ExpressionMatrix.hpp"
 
@@ -49,6 +50,15 @@ PYBIND11_MODULE(pyEM2, m) {
             },
             py::arg("existing_em2_directory")
         )
+
+        // Binding to EM.addGene, but takes a list of strings
+        .def("add_genes", [](czi_em2::ExpressionMatrix& e, const std::vector<std::string>& gene_names) {
+            for(auto gene_name: gene_names) {
+                e.addGene(gene_name);
+            };
+        }, py::arg("gene_name_list"))
+
+
 
     ;
 }
