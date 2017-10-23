@@ -8,6 +8,16 @@ dist: trusty
 before_install:
     - sudo apt-get -qq update
     - sudo apt-get install -y libboost-all-dev libhdf5-dev
+    - >
+        wget http://bitbucket.org/eigen/eigen/get/3.3.4.tar.gz &&
+        tar xf 3.3.4.tar.gz &&
+        cd eigen* &&
+        mkdir build &&
+        cd build &&
+        cmake .. &&
+        sudo make install &&
+        cd ../.. &&
+        rm -rf eigen*
 
 install:
     - pip install -r REQUIREMENTS.txt

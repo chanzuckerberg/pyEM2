@@ -29,7 +29,9 @@ ext_modules = [
             get_pybind_include(),
             get_pybind_include(user=True),
             os.path.join("ExpressionMatrix2", "src"),
-            "/usr/include/hdf5/serial"
+            "/usr/include/hdf5/serial",
+            "/usr/include/eigen3",
+            "/usr/local/include/eigen3"
         ],
         libraries=["boost_system", "boost_filesystem", "boost_regex",
                    "hdf5_cpp", "hdf5", "boost_python-py34",
