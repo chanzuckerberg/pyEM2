@@ -1,5 +1,7 @@
+import numpy
 import os
 import pytest
+import scipy.sparse
 
 import pyEM2
 
@@ -55,3 +57,16 @@ def test_init_from_existing_fails_on_missing(tmpdir):
         new_exp_mat = pyEM2.ExpressionMatrix.from_existing_directory(dir_path)
 
     assert "No such file" in str(excinfo.value)
+
+def test_init_from_csc_matrix(tmpdir):
+    """Test initialization from a scipy csc matrix."""
+
+    dir_path = os.path.join(str(tmpdir), "EM2")
+    row = numpy.array([0, 2, 2, 0, 1, 2])
+    col = numpy.array([0, 0, 1, 2, 2, 2])
+    data = numpy.array([1, 2, 3, 4, 5, 6])
+    csc_mtx = scipy.sparse.csc_matrix((data, (row, col)), shape=(3, 4))
+
+    em = pyEM2.ExpressionMatrix.from_csc_matrix(csc_mtx, dir_path)
+
+    assert set(em.genes) == set(["gene0", "gene1", "gene2"])

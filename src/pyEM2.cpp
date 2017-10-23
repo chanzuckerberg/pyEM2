@@ -1,5 +1,7 @@
+#include <Eigen/Sparse>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <pybind11/eigen.h>
 
 #include "ExpressionMatrix.hpp"
 
@@ -50,6 +52,35 @@ PYBIND11_MODULE(pyEM2, m) {
             },
             py::arg("existing_em2_directory")
         )
+
+        .def_static("from_csc_matrix",
+            [](const Eigen::SparseMatrix<float>& csc_mtx, std::string directory_name) {
+                auto em_ptr = intialize_expression_matrix(
+                    directory_name,
+                    csc_mtx.rows(),
+                    csc_mtx.cols(),
+                    csc_mtx.cols() * 100,
+                    csc_mtx.cols() * 100);
+
+                // Create some fake gene names for now
+                for(int i=0; i<csc_mtx.rows(); ++i) {
+                    std::string gene_name = "gene" + std::to_string(i);
+                }
+
+                std::vector<std::pair<std::string, float> > cell_expression_counts;
+                for(int k=0; k < csc_mtx.outerSize(); ++k) {
+                    cell_expression_counts.clear();
+                    for(Eigen::SparseMatrix<float>::InnerIterator it(csc_mtx, k); it; ++it) {
+                       std::string gene_name = "gene" + std::to_string(it.row());
+                       cell_expression_counts.push_back(std::make_pair(gene_name, it.value()));
+                    }
+                    std::string cell_name = "cell" + std::to_string(k);
+                    std::vector<std::pair<std::string, std::string> > cell_metadata;
+                    cell_metadata.push_back(make_pair("CellName", cell_name));
+                    em_ptr->addCell(cell_metadata, cell_expression_counts);
+                }
+            return em_ptr;
+        })
 
         // Binding to EM.addGene, but takes a list of strings
         .def("add_genes", [](czi_em2::ExpressionMatrix& e, const std::vector<std::string>& gene_names) {
