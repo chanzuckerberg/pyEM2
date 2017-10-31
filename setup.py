@@ -24,7 +24,7 @@ class get_pybind_include(object):
 ext_modules = [
     setuptools.Extension(
         'pyEM2',
-        sources=[os.path.join("src", "pyEM2.cpp")] + glob.glob("ExpressionMatrix2/src/*.cpp"),
+        sources=glob.glob(os.path.join("src", "pyEM2*.cpp")) + glob.glob("ExpressionMatrix2/src/*.cpp"),
         include_dirs=[
             get_pybind_include(),
             get_pybind_include(user=True),
