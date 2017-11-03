@@ -7,7 +7,8 @@ dist: trusty
 
 before_install:
     - sudo apt-get -qq update
-    - sudo apt-get install -y libboost-all-dev libhdf5-dev
+    - sudo apt-get install -y libboost-all-dev libhdf5-dev pkg-config
+    - pip install pkgconfig
     - >
         wget http://bitbucket.org/eigen/eigen/get/3.3.4.tar.gz &&
         tar xf 3.3.4.tar.gz &&
@@ -21,7 +22,7 @@ before_install:
 
 install:
     - pip install -r REQUIREMENTS.txt
-    - pip install -e .
+    - pip install -ve .
 
 script:
     - pytest -v tests/
