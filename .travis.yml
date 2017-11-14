@@ -6,8 +6,10 @@ python:
 dist: trusty
 
 before_install:
+    - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
     - sudo apt-get -qq update
-    - sudo apt-get install -y libboost-all-dev libhdf5-dev pkg-config
+    - sudo apt-get install -y libboost-all-dev libhdf5-dev pkg-config graphviz gcc-4.9 g++-4.9
+    - export CC=gcc-4.9; export CXX=g++-4.9
     - pip install pkgconfig
     - >
         wget http://bitbucket.org/eigen/eigen/get/3.3.4.tar.gz &&
