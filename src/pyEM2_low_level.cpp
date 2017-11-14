@@ -1,3 +1,5 @@
+// The "low-level" interface that directly binds C++ methods and classes
+
 #include "ClusterGraph.hpp"
 #include "ExpressionMatrix.hpp"
 #include "MemoryMappedVector.hpp"
@@ -73,9 +75,20 @@ void init_low_level(module& m) {
        .def
        (
            "addCell",
-          [](LowLevelExpressionMatrix& self, string jsonString) {return self.addCell(jsonString);},
-           "Add a cell described by a JSON string.",
-           arg("jsonString")
+          [](LowLevelExpressionMatrix& self, std::vector<std::pair<std::string, std::string> >& metadata,
+             std::vector<std::pair<std::string, float> >& expressionCounts) {
+                return self.addCell(metadata, expressionCounts);},
+           "Adds a cell to the system. The cell expression counts "
+           "and meta data are given in Python lists. "
+           "metadata is a list of tuples with meta data "
+           "(name, value) pairs. "
+           "expressionCounts is a list of tuples (geneName, count). "
+           "See `here <../../../PythonApi.html#addCell>`__ "
+           "for an example. "
+           "Returns the cell id of the cell that was just added. "
+           "Cell ids begin at zero and increment by one each time a cell is added. ",
+           arg("metaData"),
+           arg("expressionCounts")
        )
        .def("addCells",
            [](LowLevelExpressionMatrix& self,
@@ -144,7 +157,7 @@ void init_low_level(module& m) {
         low_level_module,
         "ExpressionMatrixCreationParameters",
         "Class used to store creation parameters for a new expression matrix.")
-        .def(init<>())
+        .def(init<uint64_t, uint64_t, uint64_t, uint64_t>())
         .def_readwrite("geneCapacity", &ExpressionMatrixCreationParameters::geneCapacity)
         .def_readwrite("cellCapacity", &ExpressionMatrixCreationParameters::cellCapacity)
         .def_readwrite("cellMetaDataNameCapacity", &ExpressionMatrixCreationParameters::cellMetaDataNameCapacity)
