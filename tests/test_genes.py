@@ -7,4 +7,4 @@ def test_add_genes(exp_mat):
     exp_mat.add_genes(["gene1", "gene2", "gene3"])
 
     assert len(exp_mat.genes) == 3
-    assert exp_mat.genes == ["gene1", "gene2", "gene3"]
+    assert [g.name for g in exp_mat.genes] == ["gene1", "gene2", "gene3"]

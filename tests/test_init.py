@@ -69,4 +69,4 @@ def test_init_from_csc_matrix(tmpdir):
 
     em = pyEM2.ExpressionMatrix.from_csc_matrix(csc_mtx, dir_path)
 
-    assert set(em.genes) == set(["gene0", "gene1", "gene2"])
+    assert set([g.name for g in em.genes]) == set(["gene0", "gene1", "gene2"])
