@@ -406,13 +406,13 @@ void init_high_level(py::module& m) {
         std::string name = std::to_string(self.similar_pairs_counter);
         self.similar_pairs_counter++;
 
-        self.em_ptr->findSimilarPairs3(gene_set_name, cell_set_name, name, max_pairs_per_cell,
+        self.em_ptr->findSimilarPairs4(gene_set_name, cell_set_name, name, max_pairs_per_cell,
                                        similarity_threshold, lsh_count, seed);
 
         auto sp_ptr = std::unique_ptr<SimilarPairsWrapper>(new SimilarPairsWrapper());
         sp_ptr->wrapper_ptr = self.getptr();
 
-        // findSimilarPairs3 prepends this to the name, and we'll need this to look it up
+        // findSimilarPairs4 prepends this to the name, and we'll need this to look it up
         // later.
         std::string full_name = self.directory_name + "/SimilarPairs-" + name;
         sp_ptr->full_name = full_name;
