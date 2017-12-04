@@ -77,7 +77,7 @@ def test_similar_pairs_gene_set(similarity_em):
 
     # Subsetting genes shouldn't change the results in this case.
     gene_set_1 = reversed([g for g in similarity_em.genes if int(g.name[-1]) in (0,2,4)])
-    sps = similarity_em.create_similar_pairs(0, 2, 1024, 42, gene_set=gene_set_1)
+    sps = similarity_em.create_similar_pairs(0, 2, 512, 42, gene_set=gene_set_1)
     for i in range(len(similarity_em.cells)):
         similar_cells = sps.get_similar_cells(i)
         expected_pairs = [k for k in range(len(similarity_em.cells))
@@ -87,7 +87,7 @@ def test_similar_pairs_gene_set(similarity_em):
         assert expected_pairs[1] in similar_cells
 
     gene_set_2 = (g for g in similarity_em.genes if int(g.name[-1]) in (1,3,5))
-    sps = similarity_em.create_similar_pairs(0, 2, 1024, 42, gene_set=gene_set_2)
+    sps = similarity_em.create_similar_pairs(0, 2, 512, 42, gene_set=gene_set_2)
     for i in range(len(similarity_em.cells)):
         similar_cells = sps.get_similar_cells(i)
         expected_pairs = [k for k in range(len(similarity_em.cells))
