@@ -45,6 +45,25 @@ def test_finds_correct_pairs(similarity_em):
         assert expected_pairs[0] in similar_cells
         assert expected_pairs[1] in similar_cells
 
+def test_find_all_pairs(similarity_em):
+    """Test that find_similar_pairs actually reports similar pairs.
+
+    This is just a smoke test really, checking that the basics of the wrapper
+    are working as expected.
+    """
+    sps = similarity_em.create_similar_pairs(0, 2, 1024, 42)
+    nearest_neighbors = sps.get_all_similar_cells()
+
+    assert nearest_neighbors.shape == (len(similarity_em.cells), 2)
+    
+    for i in range(len(similarity_em.cells)):
+        similar_cells = nearest_neighbors[i]
+        expected_pairs = [k for k in range(len(similarity_em.cells))
+                          if k % 2 == i % 2 and k != i]
+        assert len(similar_cells) == 2
+        assert expected_pairs[0] in similar_cells
+        assert expected_pairs[1] in similar_cells
+
 def test_similar_pairs_cell_set(similarity_em):
     """Test defining a cell set for similar pairs."""
 
@@ -95,3 +114,4 @@ def test_similar_pairs_gene_set(similarity_em):
         assert len(similar_cells) == 2
         assert expected_pairs[0] in similar_cells
         assert expected_pairs[1] in similar_cells
+
