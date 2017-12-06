@@ -137,6 +137,7 @@ public:
     std::string name; // The name in the EM2 interface, so missing the directoryName/SimilarPairs...
     std::string cell_set_name;
     std::string gene_set_name;
+    uint64_t max_pairs_per_cell;
 
     // Get a list of cell indexes that are similar to the cell at cell_index.
     std::vector<size_t> similar_cells(size_t cell_index) {
@@ -152,6 +153,21 @@ public:
         return similar_indices;
     }
 
+    Eigen::MatrixXd all_similar_cells() {
+      Eigen::MatrixXd nn_matrix(wrapper_ptr->em_ptr->cellCount(),
+                                max_pairs_per_cell);
+      nn_matrix.setConstant(-1);
+
+      czi_em2::SimilarPairs sps(full_name, false);
+      for(czi_em2::CellId cell_id=0; cell_id<wrapper_ptr->em_ptr->cellCount(); cell_id++) {
+        for(size_t i=0; i<sps.size(cell_id); i++) {
+          const auto& p = sps.begin(cell_id)[i];
+          nn_matrix(cell_id, i) =  p.first;
+        }
+      }
+
+      return nn_matrix;
+    }
 };
 
 // Wrap a CellGraphVertexInfo. This is a component of a CellGraph. The main thing here is to expose
@@ -419,6 +435,7 @@ void init_high_level(py::module& m) {
         sp_ptr->name = name;
         sp_ptr->cell_set_name = cell_set_name;
         sp_ptr->gene_set_name = gene_set_name;
+        sp_ptr->max_pairs_per_cell = max_pairs_per_cell;
         return sp_ptr;
         },
         "Create a new SimilarPairs object. The SimilarPairs object can then be used to "
@@ -478,6 +495,8 @@ void init_high_level(py::module& m) {
          &SimilarPairsWrapper::similar_cells,
          "Get the indices of cells similar to the cells at cell_index.",
          py::arg("cell_index"))
+      .def("get_all_similar_cells",
+         &SimilarPairsWrapper::all_similar_cells)
     ;
 
     py::class_<CellWrapper>(
