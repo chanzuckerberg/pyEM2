@@ -484,6 +484,51 @@ void init_high_level(py::module& m) {
         py::arg("max_pairs_per_cell")=10,
         py::arg("similar_pairs"),
         py::arg("cell_set")=py::none())
+
+    .def("cluster",
+        [](ExpressionMatrixWrapper& self,
+           const CellGraphWrapper& cell_graph,
+           size_t stable_iteration_count,
+           size_t max_iteration_count,
+           size_t seed,
+           size_t min_cluster_size,
+           size_t max_connectivity,
+           double similarity_threshold) {
+
+        std::string cluster_graph_name = std::to_string(self.cluster_graph_counter);
+        self.cluster_graph_counter++;
+
+        self.em_ptr->createClusterGraph(
+            cell_graph.name,
+            cluster_graph_name,
+            stable_iteration_count,
+            max_iteration_count,
+            seed,
+            min_cluster_size,
+            max_connectivity,
+            similarity_threshold);
+
+        auto cluster_ids = self.em_ptr->getClusterGraphVertices(cluster_graph_name);
+        Eigen::RowVectorXi cluster_assignments(self.em_ptr->cellCount());
+        cluster_assignments.setConstant(-1);
+
+        for(auto cluster_id : cluster_ids)  {
+          auto cluster_cells = self.em_ptr->getClusterCells(cluster_graph_name, cluster_id);
+          for(auto cell_id : cluster_cells) {
+            cluster_assignments(cell_id) = cluster_id;
+          }
+        }
+
+        return cluster_assignments;
+        },
+        "Cluster cells.",
+        py::arg("cell_graph"),
+        py::arg("stable_iteration_count")=3,
+        py::arg("max_iteration_count")=100,
+        py::arg("seed")=42,
+        py::arg("min_cluster_size")=100,
+        py::arg("max_connectivity")=3,
+        py::arg("similarity_threshold")=0.5)
     ;
 
     py::class_<SimilarPairsWrapper>(
